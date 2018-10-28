@@ -38,35 +38,32 @@ public class Main {
 	
 	
 	public static void createPuzzle(int numberGiven) {
-		Random rand = new Random(); 
+		Random rand = new Random();
+		int numbers[] = new int[10]; //Each cell of this array will represent a number 1-9 
+		for(  int x = 0; x < 9; x++) {
+			numbers[x] = numberGiven/9; //Distibutes the numbers to be added across the array.
+		}
+		int spot = 0; //Used to track what number we are in for the numbers array.
 		int count = 0; 
 		int step = 0;
-		int number = 0; //The number being added into the puzzle.
-		
-		int spotX = 0; // The X coordinate of where the number will be added in the puzzle. 
-		int spotY = 0; // The Y coordinate of where the number will be added.
+		int number = 0;
 		for(int x = numberGiven; x > 0; x--) {  //Adds the amount of numbers the user asks for. Decrements the number left to add after each it
-			spotX = rand.nextInt(9) ;
-			spotY =rand.nextInt(9);
-			number = rand.nextInt(9);
+			int spotX = rand.nextInt(9) ;
+			int spotY =rand.nextInt(9);
+			number = spot + 1;
 			
-			//Can only be placed if the row, column and section are all not contain the number being added
-			if(canBePlaced(spotX, spotY, number) ) { 
+			if(canBePlaced(spotX, spotY, number) ) {
 				System.out.println("SpotX = " +spotX+"\nSpotY = "+spotY);
-				
-				//Update array's to show the appropriate values as true
 				sections[getSection(spotX,spotY)][number] = true;
 				puzzle[spotX][spotY] = number;
 				columns[spotX][number] = true;
 				rows[spotY][number] = true;
-				
 				System.out.println(number + " added to puzzle["+spotX+"]["+spotY+"]"); //Logging spot number is added an where so you can test if it matches up.
-				count++;	//Increase the amount of numbers that have been added
+				count++;
+				numbers[spot]--;
+				if(numbers[spot] == 0) spot++;
 				System.out.println("Count = "+count);
 			} else {
-				
-				//If the number can not be placed we add 1 back to x so that it will try to add a different number again. 
-				//This makes it so the number of numbers being told to have in the puzzle are actually added.
 				x++;
 				step++;
 			}
@@ -75,8 +72,6 @@ public class Main {
 		}
 		System.out.println("Count = "+count+"\nStep = "+step);
 	}
-	
-	/** Checks if the current row, column, or section contain the number trying to be added. Return true if all 3 do not contain the number, and false if any do. */
 	public static Boolean canBePlaced(int spotX, int spotY, int number) {
 		if(!sections[getSection(spotX,spotY)][number] && !rows[spotY][number] && !columns[spotX][number] && puzzle[spotX][spotY] == 0) {
 			return true;
@@ -144,8 +139,7 @@ public class Main {
 			}
 			System.out.println("|");
 		}
-		System.out.println(rows[1][1]+"\n"+columns[1][1]+"\n"+sections[0][1]); //Prints 3 booleans to check if the first section, row, or column have a 1.
-		//Used for testing. 
+		System.out.println(rows[1][1]+"\n"+columns[1][1]+"\n"+sections[0][1]); //A way to check if the logic is working.
 	}
 
 }
