@@ -23,13 +23,13 @@ public class Main {
 	public static boolean rows [][];
 
 	public static void main(String[] args) {
-		puzzle = new int[10][10];
-		sections = new boolean[10][10];
-		columns = new boolean[10][10];
-		rows = new boolean[10][10];
+		puzzle = new int[9][9];
+		sections = new boolean[9][9];
+		columns = new boolean[9][9];
+		rows = new boolean[9][9];
 		
 		
-		int givenNumbers = 54;  //The amount of numbers to fill up the puzzle. Can be used to set difficulty of the puzzle. 
+		int givenNumbers = 75;  //The amount of numbers to fill up the puzzle. Can be used to set difficulty of the puzzle. 
 		createPuzzle(givenNumbers);
 		printPuzzle();
 		
@@ -39,40 +39,69 @@ public class Main {
 	
 	public static void createPuzzle(int numberGiven) {
 		Random rand = new Random();
-		int numbers[] = new int[10]; //Each cell of this array will represent a number 1-9 
-		for(  int x = 0; x < 9; x++) {
+		int numbers[] = new int[9]; //Each cell of this array will represent a number 1-9 
+		for(int x = 0; x < 9; x++) {
 			numbers[x] = numberGiven/9; //Distibutes the numbers to be added across the array.
 		}
 		int spot = 0; //Used to track what number we are in for the numbers array.
 		int count = 0; 
 		int step = 0;
 		int number = 0;
+		int skipped = 0;
+		
+		int spotX, spotY;
+		
+		int round = 0;
 		for(int x = numberGiven; x > 0; x--) {  //Adds the amount of numbers the user asks for. Decrements the number left to add after each it
-			int spotX = rand.nextInt(9) ;
-			int spotY =rand.nextInt(9);
-			number = spot + 1;
+		    
+		    if(x % 3 == 0) { 
+		        spotX = rand.nextInt(3);
+		    } else if(x % 3 == 1) {
+		        spotX = 3 + rand.nextInt(3);
+		    } else {
+		        spotX = 6 + rand.nextInt(3);
+		        round++;
+		    }
+		    
+		    if(round % 3 == 0) {
+		      spotY = rand.nextInt(3);
+		    } else if(round % 3 == 1) {
+		      spotY = 3 + rand.nextInt(3);
+		    } else {
+		      spotY = 6 + rand.nextInt(3);
+		    }
+		    
+		    
+			number = spot ;
 			
 			if(canBePlaced(spotX, spotY, number) ) {
-				System.out.println("SpotX = " +spotX+"\nSpotY = "+spotY);
+			//	System.out.println("SpotX = " +spotX+"\nSpotY = "+spotY);
 				sections[getSection(spotX,spotY)][number] = true;
 				puzzle[spotX][spotY] = number;
 				columns[spotX][number] = true;
 				rows[spotY][number] = true;
-				System.out.println(number + " added to puzzle["+spotX+"]["+spotY+"]"); //Logging spot number is added an where so you can test if it matches up.
+			//	System.out.println(number + " added to puzzle["+spotX+"]["+spotY+"]"); //Logging spot number is added an where so you can test if it matches up.
 				count++;
 				numbers[spot]--;
 				if(numbers[spot] == 0) spot++;
-				System.out.println("Count = "+count);
+			//	System.out.println("Count = "+count);
 			} else {
-				x++;
-				step++;
+			    if(step < 100){
+    				x++;
+    				step++;   
+			    } else{
+			        step = 0;
+			        skipped++;
+			    }
 			}
 			
 			
 		}
-		System.out.println("Count = "+count+"\nStep = "+step);
+		System.out.println("Count = "+count+"\nSkipped = "+skipped);
 	}
 	public static Boolean canBePlaced(int spotX, int spotY, int number) {
+	   // System.out.println("\n\n Section = "+ getSection(spotX, spotY));
+	    //System.out.println("\n\n Number = "+ number);
 		if(!sections[getSection(spotX,spotY)][number] && !rows[spotY][number] && !columns[spotX][number] && puzzle[spotX][spotY] == 0) {
 			return true;
 		}else {
@@ -139,7 +168,8 @@ public class Main {
 			}
 			System.out.println("|");
 		}
-		System.out.println(rows[1][1]+"\n"+columns[1][1]+"\n"+sections[0][1]); //A way to check if the logic is working.
+		System.out.println(numbersActuallyAdded);
+		//System.out.println(rows[1][1]+"\n"+columns[1][1]+"\n"+sections[0][1]); //A way to check if the logic is working.
 	}
 
 }
