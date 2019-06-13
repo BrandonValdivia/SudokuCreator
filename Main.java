@@ -76,6 +76,11 @@ public class Main {
 		//Every number will have a total of 4 spots it can be placed at this time. 
 		Vector<Integer>  possibleSpotsForNumbers = new Vector<>();
 		Vector<Integer>  placeableNumbers = new Vector<>();
+		Vector<Integer>  firstCellsNumbers = new Vector<>();
+		Vector<Integer>  secondCellsNumbers = new Vector<>();
+		Vector<Integer>  thirdCellsNumbers = new Vector<>();
+		Vector<Vector<Integer>> lastThreeCellsAndPlaceableNumbers = new Vector<Vector<Integer>>();
+		//Vector<Integer>[] lastThreeCellsAndPlaceableNumbers = new int[3]
 		Boolean placed;
 		for(int fillNumbers = 0; fillNumbers < 9; fillNumbers++){
 	            possibleSpotsForNumbers.add(4);
@@ -88,47 +93,183 @@ public class Main {
 		    for(int numberToCheck = 0; numberToCheck < 9; numberToCheck++ ){
                 if(!columns[xCheck][numberToCheck] && !sections[getSection(xCheck, yOfSection)][numberToCheck]) numbersToBePlaced.add( numberToCheck);
             }
-	        for(int yCheck = yOfSection; yCheck < yOfSection + 3; yCheck++) {
-	            placed = false;
-	            placeableNumbers.clear();
-	            for(int numberToCheck = 0; numberToCheck < numbersToBePlaced.size(); numberToCheck++ ){
-	                number = numbersToBePlaced.elementAt(numberToCheck);
-	                if(canBePlaced(xCheck, yCheck, number) ){
-	                    placeableNumbers.add(number);
-	                }
-	            }
-	            numberToPlace = -1;
-                for(int placeableCheck = 0; placeableCheck < placeableNumbers.size(); placeableCheck++){
-                    number = placeableNumbers.elementAt(placeableCheck);    
-                    possibleSpots = possibleSpotsForNumbers.elementAt(number);
-                    System.out.println("\nPossible Spots for "+(number+1)+" = "+possibleSpots+ "\n");
-                    if( possibleSpots == 1 && placed == false) {
-                        //placeNumber(xCheck, yCheck, number);
-                        numbersToBePlaced.removeElement(number);
-                        numberToPlace = number;
-                        placed = true;
-                    }else {
-                        if(possibleSpots == 2 && xCheck < xOfSection + 2 && columns[xCheck+1][number] && placed == false){
-                            System.out.println("\nMade it here for "+(number+1)+"\n");
-                            numberToPlace = number; //placeNumber(xCheck, yCheck, number);
-                            //numbersToBePlaced.removeElement(number);
-                            //placed = true;
+            if(xCheck >= xOfSection + 1){
+                firstCellsNumbers.clear();
+                secondCellsNumbers.clear();
+                thirdCellsNumbers.clear();
+                for(int yOfPuzzle = yOfSection; yOfPuzzle < yOfSection + 3; yOfPuzzle++){
+                    placeableNumbers.clear();
+                    for(int numberCheck = 0; numberCheck < numbersToBePlaced.size(); numberCheck++){
+                        numberToPlace = numbersToBePlaced.elementAt(numberCheck);
+                        if(canBePlaced(xCheck, yOfPuzzle, numberToPlace)){
+                            if(yOfPuzzle == 0) firstCellsNumbers.add(numberToPlace);
+                            else if(yOfPuzzle == 1) secondCellsNumbers.add(numberToPlace);
+                            else if(yOfPuzzle == 2) thirdCellsNumbers.add(numberToPlace);
                         }
+                        
+                        
+                        
                     }
-                    possibleSpotsForNumbers.setElementAt( possibleSpots - 1, number); 
+                    
+                    //lastThreeCellsAndPlaceableNumbers.add(placeableNumbers);
                 }
-                if(!placed && numberToPlace == -1) {
-                    randomSpot = rand.nextInt(placeableNumbers.size());
-                    number = placeableNumbers.elementAt(randomSpot);
-                    placeNumber(xCheck, yCheck, number);
-                    numbersToBePlaced.removeElement(number);
-                } else if(placed){
-                    placeNumber(xCheck, yCheck, numberToPlace);
-                } else if(numberToPlace != -1){
-                    placeNumber(xCheck, yCheck, numberToPlace);
-                    numbersToBePlaced.removeElement(numberToPlace);
+                placeableNumbers.clear();
+                int smallest = 5;
+                
+                String currentVector; 
+                for (int o = 0; o < firstCellsNumbers.size(); o++ ) {
+                    System.out.print((firstCellsNumbers.elementAt(o) +1) + " ");
                 }
-	        }
+                System.out.println();
+                for (int o = 0; o < secondCellsNumbers.size(); o++ ) {
+                    System.out.print((secondCellsNumbers.elementAt(o)+1) + " ");
+                }
+                System.out.println();
+                for (int o = 0; o < thirdCellsNumbers.size(); o++ ) {
+                    System.out.print((thirdCellsNumbers.elementAt(o)+1) + " ");
+                }
+                
+                System.out.println();
+                
+                if(firstCellsNumbers.size() == 1) placeNumber(xCheck, yOfSection, firstCellsNumbers.firstElement());
+                if(secondCellsNumbers.size() == 1) placeNumber(xCheck, yOfSection+1, secondCellsNumbers.firstElement());
+                if(thirdCellsNumbers.size() == 1) placeNumber(xCheck, yOfSection+2, thirdCellsNumbers.firstElement());
+                
+                
+                if(firstCellsNumbers.size() == 2 && firstCellsNumbers.size() < secondCellsNumbers.size() && firstCellsNumbers.size() < thirdCellsNumbers.size()) {
+                    numberToPlace = firstCellsNumbers.firstElement();
+                    placeNumber(xCheck, yOfSection, numberToPlace);
+                    possibleSpotsForNumbers.setElementAt(possibleSpotsForNumbers.elementAt(firstCellsNumbers.elementAt(1)),  firstCellsNumbers.elementAt(1));
+                    if(secondCellsNumbers.contains(numberToPlace)) secondCellsNumbers.remove(secondCellsNumbers.indexOf(numberToPlace));
+                    if(thirdCellsNumbers.contains(numberToPlace))thirdCellsNumbers.remove(thirdCellsNumbers.indexOf(numberToPlace));
+                    System.out.println("\n\n CHECK IT OUT 1\n");
+                }else if(secondCellsNumbers.size() == 2 && secondCellsNumbers.size() < firstCellsNumbers.size() && secondCellsNumbers.size() < thirdCellsNumbers.size()) {
+                    System.out.println("\n\n CHECK IT OUT 2\n");
+                    numberToPlace = secondCellsNumbers.firstElement();
+                    placeNumber(xCheck, yOfSection+1, numberToPlace);
+                    possibleSpotsForNumbers.setElementAt(possibleSpotsForNumbers.elementAt(secondCellsNumbers.elementAt(1)) , secondCellsNumbers.elementAt(1));
+                    
+                    if(firstCellsNumbers.contains(numberToPlace)) firstCellsNumbers.remove(firstCellsNumbers.indexOf(numberToPlace));
+                    if(thirdCellsNumbers.contains(numberToPlace)) thirdCellsNumbers.remove(thirdCellsNumbers.indexOf(numberToPlace));
+                }else if(thirdCellsNumbers.size() == 2 && thirdCellsNumbers.size() < secondCellsNumbers.size() && thirdCellsNumbers.size() < firstCellsNumbers.size()) {
+                    System.out.println("\n\n CHECK IT OUT 3\n");
+                    numberToPlace = thirdCellsNumbers.firstElement();
+                    placeNumber(xCheck, yOfSection+2, numberToPlace);
+                    possibleSpotsForNumbers.setElementAt(possibleSpotsForNumbers.elementAt(thirdCellsNumbers.elementAt(1)) ,  thirdCellsNumbers.elementAt(1));
+                    
+                    if(secondCellsNumbers.contains(numberToPlace))secondCellsNumbers.remove(secondCellsNumbers.indexOf(numberToPlace));
+                    if(firstCellsNumbers.contains(numberToPlace))firstCellsNumbers.remove(firstCellsNumbers.indexOf(numberToPlace));
+                    
+                }
+                
+                if(firstCellsNumbers.size() == 1) placeNumber(xCheck, yOfSection, firstCellsNumbers.firstElement());
+                if(secondCellsNumbers.size() == 1) placeNumber(xCheck, yOfSection+1, secondCellsNumbers.firstElement());
+                if(thirdCellsNumbers.size() == 1) placeNumber(xCheck, yOfSection+2, thirdCellsNumbers.firstElement());
+                
+                /*
+                for(int sizeCheck = 0; sizeCheck < lastThreeCellsAndPlaceableNumbers.size(); sizeCheck++){
+                    placeableNumbers = lastThreeCellsAndPlaceableNumbers.elementAt(sizeCheck);
+                    currentVector = "";
+                    for(int vectorCheck = 0; vectorCheck < placeableNumbers.size(); vectorCheck++){
+                        currentVector += placeableNumbers.elementAt(vectorCheck) + ", ";
+                        
+                    }
+                    System.out.println(currentVector);
+                }
+                */
+            }
+            
+	        for(int yCheck = yOfSection; yCheck < yOfSection + 3; yCheck++) {
+	            if(puzzle[xCheck][yCheck] == 0){
+    	            placed = false;
+    	            placeableNumbers.clear();
+    	            for(int numberToCheck = 0; numberToCheck < numbersToBePlaced.size(); numberToCheck++ ){
+    	                number = numbersToBePlaced.elementAt(numberToCheck);
+    	                if(canBePlaced(xCheck, yCheck, number) ){
+    	                    placeableNumbers.add(number);
+    	                }
+    	            }
+    	            
+    	            if(!placeableNumbers.isEmpty() ){ //If you can't place a number
+    	                
+    	            
+    	            
+        	            numberToPlace = -1;
+                        for(int placeableCheck = 0; placeableCheck < placeableNumbers.size(); placeableCheck++){
+                            number = placeableNumbers.elementAt(placeableCheck);    
+                            possibleSpots = possibleSpotsForNumbers.elementAt(number);
+                            System.out.println("\nPossible Spots for "+(number+1)+" = "+possibleSpots+ "\n");
+                            
+                            if( possibleSpots == 1 && placed == false) {
+                                //placeNumber(xCheck, yCheck, number);
+                                numbersToBePlaced.removeElement(number);
+                                numberToPlace = number;
+                                placed = true;
+                            }else {
+                                if(possibleSpots == 2 && xCheck < xOfSection + 2 && placed == false){
+                                    if(columns[xCheck+1][number]){ 
+                                        System.out.println("\nMade it here for "+(number+1)+"\n");
+                                        numberToPlace = number; //placeNumber(xCheck, yCheck, number);
+                                    }else if(xCheck==xOfSection && columns[xCheck+2][number]){
+                                        System.out.println("\nMade it here for "+(number+1)+"\n");
+                                        numberToPlace = number; //placeNumber(xCheck, yCheck, number);
+                                    }
+                                    //numbersToBePlaced.removeElement(number);
+                                    //placed = true;
+                                }
+                            }
+                            possibleSpotsForNumbers.setElementAt( possibleSpots - 1, number); 
+                        }
+                        if(!placed && numberToPlace == -1) {
+                            randomSpot = rand.nextInt(placeableNumbers.size());
+                            number = placeableNumbers.elementAt(randomSpot);
+                            placeNumber(xCheck, yCheck, number);
+                            numbersToBePlaced.removeElement(number);
+                        } else if(placed){
+                            placeNumber(xCheck, yCheck, numberToPlace);
+                        } else if(numberToPlace != -1){
+                            placeNumber(xCheck, yCheck, numberToPlace);
+                            numbersToBePlaced.removeElement(numberToPlace);
+                        }
+    	            }else {
+    	                boolean found = false;
+    	                int numInPuzzle, numToBePlaced;
+        	            for(int numberCheck = 0; numberCheck < 9; numberCheck++){
+        	                if(!rows[yCheck][numberCheck] && !columns[xCheck][numberCheck] ){
+        	                    placeableNumbers.add(numberCheck);
+        	                    System.out.println((numberCheck+1)+" could go here!");
+        	                    
+        	                    for(int xFinder = xOfSection; xFinder <= xCheck; xFinder++){
+        	                        for(int yFinder = yOfSection; yFinder <= yCheck; yFinder++){
+        	                            numInPuzzle = puzzle[xFinder][yFinder] - 1;
+        	                            if(numInPuzzle == numberCheck){
+        	                                for(int needsPlacement = 0; needsPlacement < numbersToBePlaced.size(); needsPlacement++){
+        	                                    numToBePlaced = numbersToBePlaced.elementAt(needsPlacement);
+        	                                    if(!rows[yFinder][numToBePlaced] && !columns[xFinder][numToBePlaced]){
+            	                                    found = true;
+            	                                    System.out.println(" \nWOW NELLY!\n ");
+            	                                    removeNumber(xFinder, yFinder, numInPuzzle+1);
+            	                                    placeNumber(xCheck, yCheck, numberCheck);
+        	                                        placeNumber(xFinder, yFinder, numToBePlaced);
+        	                                        break;
+        	                                    }
+        	                                    if(found) break;
+        	                                }
+        	                                
+        	                                
+        	                            }
+        	                            if(found) break;
+        	                        }
+        	                        if(found) break;
+        	                    }
+        	                }
+        	                if(found) break;
+        	            }
+        	            
+        	            //placeableNumbers
+        	        }
+	            }
+	        } 
 	    }
 	    
 	    
@@ -398,6 +539,8 @@ public class Main {
 	}
 	
 	
+	
+	
 	public static void fillDiagonalSections(){
 	    int number, randomSpot;
 	    Vector<Integer>  numbersToBePlaced = new Vector<>();
@@ -427,7 +570,7 @@ public class Main {
 		
 		sections[getSection(spotX, spotY)][erasedNum] = false;
         
-        System.out.println(number + " removed from puzzle["+spotX+"]["+spotY+"]"); //Logging spot number is added an where so you can test if it matches up.
+        System.out.println(number + " removed from puzzle["+spotX+"]["+spotY+"]"); //Logging spot number is added and where so you can test if it matches up.
 		printPuzzle();
 		System.out.println("X = "+spotX);
 		System.out.println("Y = "+spotY);
@@ -447,6 +590,11 @@ public class Main {
 		System.out.println("X = "+spotX);
 		System.out.println("Y = "+spotY);
 	}
+	
+	public static void clearColumn(int xCheck, int yCheck, int yOfSection){
+	    
+	}
+	
 	
 	public static Boolean canBePlaced(int spotX, int spotY, int number) {
 	   // System.out.println("\n\n Section = "+ getSection(spotX, spotY));
