@@ -64,6 +64,7 @@ public class Main {
 		Vector<Integer>  xs = new Vector<>();
 		Vector<Integer>  ys = new Vector<>();
 		Vector<Integer>  numbersToBePlaced = new Vector<>();
+		Vector<Integer>  numbersToBePlacedInFollowSection = new Vector<>();
 		int randomSpot;
 		
 		fillDiagonalSections();
@@ -90,9 +91,25 @@ public class Main {
 		int numberToPlace;
 		for(int xCheck = xOfSection; xCheck < xOfSection + 3; xCheck++){
 		    numbersToBePlaced.clear();
+		    numbersToBePlacedInFollowSection.clear();
 		    for(int numberToCheck = 0; numberToCheck < 9; numberToCheck++ ){
                 if(!columns[xCheck][numberToCheck] && !sections[getSection(xCheck, yOfSection)][numberToCheck]) numbersToBePlaced.add( numberToCheck);
+                if(!columns[xCheck][numberToCheck] && !sections[getSection(xCheck, yOfSection + 6)][numberToCheck]) numbersToBePlacedInFollowSection.add( numberToCheck);
             }
+		    printPuzzle();
+		    System.out.print("numbersToBePlaced = ");
+		    for (int o = 0; o < numbersToBePlaced.size(); o++ ) {
+                System.out.print((numbersToBePlaced.elementAt(o) +1) + " ");
+            }
+		    System.out.print("\n");
+		    System.out.print("numbersToBePlacedInFollowSection = ");
+		    for (int o = 0; o < numbersToBePlacedInFollowSection.size(); o++ ) {
+                System.out.print((numbersToBePlacedInFollowSection.elementAt(o) +1) + " ");
+            }
+		    System.out.print("\n");
+		    
+		    
+		    
             if(xCheck >= xOfSection + 1){
                 firstCellsNumbers.clear();
                 secondCellsNumbers.clear();
@@ -225,11 +242,13 @@ public class Main {
                             number = placeableNumbers.elementAt(randomSpot);
                             placeNumber(xCheck, yCheck, number);
                             numbersToBePlaced.removeElement(number);
+                            numbersToBePlacedInFollowSection.removeElement(number);
                         } else if(placed){
                             placeNumber(xCheck, yCheck, numberToPlace);
                         } else if(numberToPlace != -1){
                             placeNumber(xCheck, yCheck, numberToPlace);
                             numbersToBePlaced.removeElement(numberToPlace);
+                            numbersToBePlacedInFollowSection.removeElement(number);
                         }
     	            }else {
     	                boolean found = false;
@@ -270,9 +289,119 @@ public class Main {
         	        }
 	            }
 	        } 
+	        printPuzzle();
+	        System.out.print("numbersToBePlaced = ");
+		    for (int o = 0; o < numbersToBePlaced.size(); o++ ) {
+	            System.out.print((numbersToBePlaced.elementAt(o) +1) + " ");
+	        }
+		    System.out.print("\n");
+		    System.out.print("numbersToBePlacedInFollowSection = ");
+		    for (int o = 0; o < numbersToBePlacedInFollowSection.size(); o++ ) {
+	            System.out.print((numbersToBePlacedInFollowSection.elementAt(o) +1) + " ");
+	        }
+		    System.out.print("\n");
+		    placeableNumbers.clear();
+		    int countOfPlaceable;
+		    firstCellsNumbers.clear();
+		    secondCellsNumbers.clear();
+		    thirdCellsNumbers.clear();
+		    
+		    
+		    for(int yOfFollow = yOfSection+6; yOfFollow < yOfSection+9; yOfFollow++) {
+		    	countOfPlaceable = 0;
+		    	for(int checkNumbers = 0; checkNumbers < numbersToBePlacedInFollowSection.size(); checkNumbers++){
+		    	
+		    		
+		    		number = numbersToBePlacedInFollowSection.elementAt(checkNumbers);
+		    		if(canBePlaced(xCheck, yOfFollow, number)) {
+		    			countOfPlaceable++;
+		    			switch( yOfFollow - (yOfSection+6)) {
+		    				case 0:
+		    					firstCellsNumbers.add(number);
+		    					break;
+		    				case 1:
+		    					secondCellsNumbers.add(number);
+		    					break;
+		    				case 2:
+		    					thirdCellsNumbers.add(number);
+		    					break;
+		    			}
+		    			placeableNumbers.add(number);
+		    			//placeNumber(xCheck, yOfFollow, number);
+		    			//numbersToBePlacedInFollowSection.removeElement(number);
+		    		}
+		    	}
+		    	/*
+		    	if(countOfPlaceable == 1) {
+		    		placeNumber(xCheck, yOfFollow, placeableNumbers.elementAt(0));
+		    		numbersToBePlacedInFollowSection.removeElement(placeableNumbers.elementAt(0));
+		    	}
+		    	placeableNumbers.clear();
+		    	*/
+		    }
+		    
+		    for(int yOfFollow = yOfSection+6; yOfFollow < yOfSection+9; yOfFollow++) {
+		    	if(firstCellsNumbers.size() == 1 ) {
+		    		number = firstCellsNumbers.elementAt(0);
+		    		placeNumber(xCheck, yOfSection+6, number);
+		    		firstCellsNumbers.clear();
+		    		secondCellsNumbers.removeElement(number);
+		    		thirdCellsNumbers.removeElement(number);
+		    	}
+		    	if(secondCellsNumbers.size() == 1 ) {
+		    		number = secondCellsNumbers.elementAt(0);
+		    		placeNumber(xCheck, yOfSection+7, number);
+		    		secondCellsNumbers.clear();
+		    		firstCellsNumbers.removeElement(number);
+		    		thirdCellsNumbers.removeElement(number);
+		    	}
+		    	if(thirdCellsNumbers.size() == 1 ) {
+		    		number = thirdCellsNumbers.elementAt(0);
+		    		placeNumber(xCheck, yOfSection+8, number);
+		    		thirdCellsNumbers.clear();
+		    		secondCellsNumbers.removeElement(number);
+		    		firstCellsNumbers.removeElement(number);
+		    	}
+		    	
+		    	if(puzzle[xCheck] [yOfFollow] == 0) {
+			    	countOfPlaceable = 0;
+			    	for(int checkNumbers = 0; checkNumbers < numbersToBePlacedInFollowSection.size(); checkNumbers++){
+			    	
+			    		
+			    		number = numbersToBePlacedInFollowSection.elementAt(checkNumbers);
+			    		if(canBePlaced(xCheck, yOfFollow, number)) {
+			    			
+			    			placeNumber(xCheck, yOfFollow, number);
+			    			secondCellsNumbers.removeElement(number);
+				    		firstCellsNumbers.removeElement(number);
+				    		thirdCellsNumbers.removeElement(number);
+				    		
+			    			numbersToBePlacedInFollowSection.removeElement(number);
+			    		}
+			    	}
+			    	if(countOfPlaceable == 1) {
+			    		placeNumber(xCheck, yOfFollow, number);
+			    		numbersToBePlacedInFollowSection.removeElement(number);
+			    	}
+			    	placeableNumbers.clear();
+		    	}
+		    }
+		    
+		    
+		    
+		    
 	    }
-	    
-	    
+	    printPuzzle();
+		System.out.print("numbersToBePlaced = ");
+	    for (int o = 0; o < numbersToBePlaced.size(); o++ ) {
+            System.out.print((numbersToBePlaced.elementAt(o) +1) + " ");
+        }
+	    System.out.print("\n");
+	    System.out.print("numbersToBePlacedInFollowSection = ");
+	    for (int o = 0; o < numbersToBePlacedInFollowSection.size(); o++ ) {
+            System.out.print((numbersToBePlacedInFollowSection.elementAt(o) +1) + " ");
+        }
+	    System.out.print("\n");
 	    
 	    //Top right corner
 	    numbersToBePlaced.clear();
