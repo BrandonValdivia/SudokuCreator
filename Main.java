@@ -306,7 +306,7 @@ public class Main {
 		    secondCellsNumbers.clear();
 		    thirdCellsNumbers.clear();
 		    
-		    
+		    boolean changeMade = false;
 		    for(int yOfFollow = yOfSection+6; yOfFollow < yOfSection+9; yOfFollow++) {
 		    	countOfPlaceable = 0;
 		    	for(int checkNumbers = 0; checkNumbers < numbersToBePlacedInFollowSection.size(); checkNumbers++){
@@ -341,30 +341,34 @@ public class Main {
 		    }
 		    
 		    for(int yOfFollow = yOfSection+6; yOfFollow < yOfSection+9; yOfFollow++) {
-		    	if(firstCellsNumbers.size() == 1 ) {
+		        changeMade = false;
+		    	if(firstCellsNumbers.size() == 1 &&  puzzle[xCheck][yOfSection+6] == 0) {
 		    		number = firstCellsNumbers.elementAt(0);
 		    		placeNumber(xCheck, yOfSection+6, number);
-		    		firstCellsNumbers.clear();
+		    		firstCellsNumbers.removeElement(number);
 		    		secondCellsNumbers.removeElement(number);
 		    		thirdCellsNumbers.removeElement(number);
+		    		changeMade = true;
 		    	}
-		    	if(secondCellsNumbers.size() == 1 ) {
+		    	if(secondCellsNumbers.size() == 1 && puzzle[xCheck][yOfSection+7] == 0) {
 		    		number = secondCellsNumbers.elementAt(0);
 		    		placeNumber(xCheck, yOfSection+7, number);
-		    		secondCellsNumbers.clear();
-		    		firstCellsNumbers.removeElement(number);
-		    		thirdCellsNumbers.removeElement(number);
-		    	}
-		    	if(thirdCellsNumbers.size() == 1 ) {
-		    		number = thirdCellsNumbers.elementAt(0);
-		    		placeNumber(xCheck, yOfSection+8, number);
-		    		thirdCellsNumbers.clear();
 		    		secondCellsNumbers.removeElement(number);
 		    		firstCellsNumbers.removeElement(number);
+		    		thirdCellsNumbers.removeElement(number);
+		    		changeMade = true;
+		    	}
+		    	if(thirdCellsNumbers.size() == 1 && puzzle[xCheck][yOfSection+8] == 0) {
+		    		number = thirdCellsNumbers.elementAt(0);
+		    		placeNumber(xCheck, yOfSection+8, number);
+		    		thirdCellsNumbers.removeElement(number);
+		    		secondCellsNumbers.removeElement(number);
+		    		firstCellsNumbers.removeElement(number);
+		    		changeMade = true;
 		    	}
 		    	
 		    	if(puzzle[xCheck] [yOfFollow] == 0) {
-			    	countOfPlaceable = 0;
+			    	
 			    	for(int checkNumbers = 0; checkNumbers < numbersToBePlacedInFollowSection.size(); checkNumbers++){
 			    	
 			    		
@@ -377,13 +381,10 @@ public class Main {
 				    		thirdCellsNumbers.removeElement(number);
 				    		
 			    			numbersToBePlacedInFollowSection.removeElement(number);
+			    			break;
 			    		}
 			    	}
-			    	if(countOfPlaceable == 1) {
-			    		placeNumber(xCheck, yOfFollow, number);
-			    		numbersToBePlacedInFollowSection.removeElement(number);
-			    	}
-			    	placeableNumbers.clear();
+			    	
 		    	}
 		    }
 		    
